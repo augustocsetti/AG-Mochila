@@ -85,10 +85,13 @@ def melhor_fitness(pop, capacidadeTotal):
 def evolve(pop, capacidadeTotal, retain=0.5, random_select=0.5, mutate=0.1):
     'Tabula cada individuo e o seu fitness'
     graded = [ (fitness(x, capacidadeTotal), x) for x in pop]
+
     'Ordena pelo fitness os individuos - maior->menor'
     graded = [ x for x in sorted(graded, reverse=True)]
+    
     'Calcula total de fitness'
     fitnessTotal = sum(x[0] for x in pop)
+    
     'Rolando roleta'
     parents = []
     for individual in graded:
@@ -97,20 +100,23 @@ def evolve(pop, capacidadeTotal, retain=0.5, random_select=0.5, mutate=0.1):
         'Gira a roleta'
         if percentage > random():
             parents.append(individual[1])
+    
     'Adicionando OUTROS para variedade genetica'
     retain_length = int(len(graded)*retain)
     for individual in graded[retain_length:]:
         if random_select > random():
             parents.append(individual[1])
+    
     'Mutacao em alguns individuos'
     for individual in parents:
         if mutate > random():
             pos_to_mutate = randint(0, len(individual)-1)
             individual[pos_to_mutate] = randint(
                 min(individual), max(individual))
+
     'Crossover dos pais'
     parents_length = len(parents)
-    'Descobre quantos filhos terao que ser gerados alem da elite e aleatorios'
+    'Descobre quantos filhos terao que ser gerados alem da roleta e aleatorios'
     desired_length = len(pop) - parents_length
     children = []
     limite = 10
@@ -130,6 +136,7 @@ def evolve(pop, capacidadeTotal, retain=0.5, random_select=0.5, mutate=0.1):
         limite -= 1
         if limite == 0:
             break
+        
     'Adiciona a lista de pais os filhos gerados'
     parents.extend(children)
     return parents
