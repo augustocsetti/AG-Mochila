@@ -4,6 +4,7 @@ from functools import reduce
 import numpy as np
 import uuid
 
+# Definição da lista de itens
 produtos = [
     { "nome": 'Chocolate',      "peso": 1.2, "preco": 2.1  },
     { "nome": 'Coca-Cola',      "peso": 3.3, "preco": 8.3  },
@@ -16,11 +17,12 @@ produtos = [
     { "nome": 'Arroz',          "peso": 3.6, "preco": 2.0  },
 ]
 
-
+# Cria um indivíduo
 def individual(length, min, max):
     'Create a member of the population.'
     return [ randint(min,max) for x in range(length) ]
 
+# Cria uma população
 def population(count, length, min, max):
     """
     Create a number of individuals (i.e. a population).
@@ -33,21 +35,24 @@ def population(count, length, min, max):
     """
     return [ individual(length, min, max) for x in range(count) ]
 
+# Calcula o peso total dos itens de um indivíduo
 def getWeight(individual):
     ret = 0
     for i in range(len(individual)):
         ret += produtos[i]['peso'] * individual[i]
     return ret
 
+# Calcula o preço total dos itens de um indivíduo
 def getPrice(individual):
     ret = 0
     for i in range(len(individual)):
         ret += produtos[i]['preco'] * individual[i]
     return ret
 
+# Calcula o fitness de um indivíduo
 def fitness(individual, capacidadeTotal):
     """
-    Determina o fitness do individuo, levando em conta seu peco
+    Determina o fitness do individuo, levando em conta seu peso
     e tambem o quanto seu peso excede a capacidade total.
 
     Caso o peso ultrapasse a capacidade total, o fitness
@@ -58,23 +63,25 @@ def fitness(individual, capacidadeTotal):
     overweight = weight - capacidadeTotal
     return price - (10*overweight if overweight > 0 else 0)
 
+# Calcula a média do peso dos itens de uma população
 def media_peso(pop):
     'Encontra o peso médio de uma população'
     summed = reduce(add, (getWeight(x) for x in pop), 0)
     return summed / (len(pop) * 1.0)
 
+# Calcula a média dos fitness de uma população
 def media_fitness(pop, capacidadeTotal):
-    'Encontra o fitness médio de uma população'
     summed = reduce(add, (fitness(x, capacidadeTotal) for x in pop), 0)
     return summed / (len(pop) * 1.0)
 
+# Encontra o melhor fitness de um indivíduo em uma população
 def melhor_fitness(pop, capacidadeTotal):
-    'Encontra o melhor fitness de uma população'
     best = pop[0]
     for i in pop:
         best = i if fitness(i, capacidadeTotal) > fitness(best, capacidadeTotal) else best
     return best
 
+# Define o método de seleção, crossover e mutação de uma geração
 def evolve(pop, capacidadeTotal, retain=0.5, random_select=0.5, mutate=0.1):
     'Tabula cada individuo e o seu fitness'
     graded = [ (fitness(x, capacidadeTotal), x) for x in pop]
